@@ -37,7 +37,7 @@ CREATE PROCEDURE collect_stats()
 BEGIN
 DECLARE a datetime;
 DECLARE v varchar(10);
-set sql_log_bin = 0;
+-- set sql_log_bin = 0;
 set a=now();
 select substr(version(),1,3) into v;
 
@@ -118,7 +118,7 @@ insert into my2.status(variable_name,variable_value,timest)
      from performance_schema.global_variables
     where variable_name in ('max_connections', 'innodb_buffer_pool_size', 'query_cache_size', 
                             'innodb_log_buffer_size', 'key_buffer_size', 'table_open_cache');
-set sql_log_bin = 1;
+-- set sql_log_bin = 1;
 END //
 DELIMITER ; //
 
@@ -128,7 +128,7 @@ DELIMITER // ;
 CREATE PROCEDURE collect_daily_stats()
 BEGIN
 DECLARE a datetime;
-set sql_log_bin = 0;
+-- set sql_log_bin = 0;
 set a=now();
 insert into my2.status(variable_name,variable_value,timest)
  select concat('SIZEDB.',table_schema), sum(data_length+index_length), a
@@ -138,14 +138,14 @@ insert into my2.status(variable_name,variable_value,timest)
    from information_schema.tables;
 delete from my2.status where timest < date_sub(now(), INTERVAL 62 DAY) and variable_name <>'SIZEDB.TOTAL';
 delete from my2.status where timest < date_sub(now(), INTERVAL 365 DAY);
-set sql_log_bin = 1;
+-- set sql_log_bin = 1;
 END //
 DELIMITER ; //
 
 -- The event scheduler must also be activated in the my.cnf (event_scheduler=1)
-set global event_scheduler=1;
+-- set global event_scheduler=1;
 
-set sql_log_bin = 0;
+-- set sql_log_bin = 0;
 DROP EVENT IF EXISTS collect_stats;
 CREATE EVENT collect_stats
     ON SCHEDULE EVERY 10 Minute
@@ -154,9 +154,9 @@ DROP EVENT IF EXISTS collect_daily_stats;
 CREATE EVENT collect_daily_stats
     ON SCHEDULE EVERY 1 DAY
     DO call collect_daily_stats();
-set sql_log_bin = 1;
+-- set sql_log_bin = 1;
 
 -- Use a specific user (suggested)
--- create user my2@'%' identified by 'P1e@seCh@ngeMe';
--- grant all on my2.* to my2@'%';
--- grant select on performance_schema.* to my2@'%';
+create user my2@'%' identified by '52v8d6el7v';
+grant all on my2.* to my2@'%';
+grant select on performance_schema.* to my2@'%';
